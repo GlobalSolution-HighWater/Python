@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 # Configuração MQTT
 BROKER = "broker.hivemq.com"
 PORTA = 1883
-TOPICO = "alertasp/ponto01/leituras"
+TOPICO = "highwater/ponto01/leituras"
 
 # Configuração do sensor simulado
 ALTURA_REFERENCIA = 150
@@ -22,7 +22,7 @@ distancias = [
 
 cliente = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
-    client_id="alertasp_simulador_01"
+    client_id="highwater_simulador_01"
 )
 
 cliente.connect(BROKER, PORTA, 60)

@@ -5,7 +5,7 @@ from datetime import datetime
 
 BROKER = "broker.hivemq.com"
 PORTA = 1883
-TOPICO = "alertasp/ponto01/leituras"
+TOPICO = "highwater/ponto01/leituras"
 
 ALTURA_LIMITE = 100
 
@@ -71,7 +71,7 @@ def ao_receber(cliente, userdata, mensagem):
 
 cliente = mqtt.Client(
     mqtt.CallbackAPIVersion.VERSION2,
-    client_id="alertasp_backend_01"
+    client_id="highwater_backend_01"
 )
 
 cliente.on_connect = ao_conectar
