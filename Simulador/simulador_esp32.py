@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 import paho.mqtt.client as mqtt
 
 # Configuração MQTT
-BROKER = "broker.hivemq.com"
+BROKER = "3.93.68.31"
 PORTA = 1883
 TOPICO = "highwater/ponto01/leituras"
 
