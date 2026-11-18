@@ -1,120 +1,136 @@
-# HighWater — Sistema IoT de Monitoramento de Nível de Água
+# High Water — Monitoramento IoT de Nível da Água
 
-## 1. Sobre o projeto
+## Sobre o projeto
 
-O **HighWater** é um sistema de monitoramento de nível de água desenvolvido como projeto acadêmico. Seu objetivo é demonstrar como tecnologias de Internet das Coisas (IoT), processamento de dados e desenvolvimento web podem ser utilizadas para monitorar situações de possível alagamento.
+O **High Water** é um projeto acadêmico de Internet das Coisas (IoT) desenvolvido para demonstrar o monitoramento do nível da água em regiões suscetíveis a alagamentos.
 
-O projeto utiliza um ESP32 simulado no Wokwi, comunicação MQTT, processamento de dados em Python e armazenamento em nuvem por meio do Supabase.
+A solução utiliza um ESP32 com sensor ultrassônico HC-SR04, comunicação MQTT e processamento de dados em Python. As leituras são armazenadas no Supabase, permitindo sua consulta por meio de um dashboard desenvolvido em React.
 
-## 2. Problema
+O projeto também conta com um simulador em Python para representar o funcionamento do dispositivo.
 
-Alagamentos representam um problema recorrente em grandes centros urbanos, como São Paulo. A elevação do nível da água pode acontecer rapidamente, dificultando a identificação antecipada de situações de risco.
+## Dashboard
 
-A ausência de monitoramento contínuo dificulta a identificação de mudanças no nível da água e a emissão de alertas preventivos.
+O projeto possui uma interface web desenvolvida em React e publicada na Vercel.
 
-O HighWater propõe uma demonstração de como sensores e processamento automatizado podem auxiliar nesse monitoramento.
+**Acesse:** [High Water — Simulação](https://front-web-rose.vercel.app/simulation)
 
-## 3. Solução proposta
+A interface permite visualizar a simulação do monitoramento e acompanhar o comportamento do nível da água.
 
-O sistema utiliza um sensor ultrassônico HC-SR04 conectado a um ESP32 simulado no Wokwi para representar o monitoramento de um ponto sujeito a alagamentos.
+## Arquitetura do projeto
 
-O sensor mede a distância entre sua posição fixa e a superfície da água. A partir dessa distância, o sistema calcula o nível da água utilizando uma altura de referência.
-
-O Python recebe as medições por MQTT e realiza o processamento dos dados, incluindo:
-
-- Cálculo da taxa de variação do nível da água por meio da primeira derivada.
-- Identificação da tendência de subida ou descida da água.
-- Classificação do estado do ponto monitorado.
-- Estimativa do tempo necessário para atingir o limite crítico, considerando a taxa de subida atual.
-
-Após o processamento, os resultados são enviados ao Supabase, que armazena os registros e disponibiliza uma API REST para consulta pelo Dashboard desenvolvido em React.
-
-## 4. Arquitetura do sistema
-
-O funcionamento do projeto pode ser dividido em cinco etapas:
-
-1. **Wokwi e ESP32:** simulam o dispositivo IoT e realizam as medições do sensor ultrassônico.
-2. **MQTT:** transporta as mensagens publicadas pelo ESP32 até o receptor Python.
-3. **Python:** recebe as medições, calcula as derivadas, classifica os riscos e prepara os dados.
-4. **Supabase:** armazena os registros em um banco PostgreSQL e disponibiliza uma API REST.
-5. **React:** consulta os dados armazenados e apresenta as informações ao usuário por meio de um Dashboard.
-
-### Fluxo de comunicação
+O fluxo principal de funcionamento é:
 
 ```text
-       WOKWI
-    ESP32 + HC-SR04
+ESP32 + HC-SR04 (Wokwi)
           |
-          | Publicação MQTT
           v
-      BROKER MQTT
+      Broker MQTT
           |
-          | Recebimento MQTT
           v
-     PYTHON BACKEND
-    - Processamento
-    - Cálculo da derivada
-    - Classificação de risco
-    - Previsão de tempo
+     Backend Python
           |
-          | Inserção de registros
           v
-       SUPABASE
-    - Banco PostgreSQL
-    - API REST
+       Supabase
           |
-          | Consulta HTTP
           v
-    DASHBOARD REACT
+    Dashboard React
 ```
 
-## 5. Integração com o Wokwi e o MQTT
+O projeto também possui um simulador Python que permite representar o comportamento do dispositivo sem depender exclusivamente da simulação do hardware no Wokwi.
 
-### 5.1. Simulação do dispositivo
+### Responsabilidade de cada componente
 
-O Wokwi é utilizado para simular o ESP32 e o sensor ultrassônico HC-SR04.
+- **Firmware:** código responsável pelo funcionamento do ESP32 e pela comunicação com o sensor ultrassônico.
+- **Backend:** recebe as mensagens MQTT, processa as leituras e envia os registros ao Supabase.
+- **simulador:** simula o comportamento do dispositivo utilizando Python.
+- **Supabase:** armazena os dados e disponibiliza uma API REST para consulta.
+- **Dashboard:** apresenta os dados por meio de uma interface web.
 
-O sensor mede a distância entre ele e a superfície da água. Quando a água sobe, essa distância diminui.
+## Estrutura de arquivos
 
-Para transformar a distância em nível de água, é utilizada a seguinte fórmula:
+```text
+HighWater/
+│
+├── Backend/
+│   ├── .env
+│   ├── .env.example
+│   └── receptor_mqtt.py
+│
+├── Firmware/
+│   ├── diagram.json
+│   ├── libraries.txt
+│   ├── sketch.ino
+│   └── wokwi-project.txt
+│
+├── simulador/
+│   └── simulador_esp32.py
+│
+├── .gitignore
+├── prompts.md
+└── README.md
+```
+
+### Backend
+
+Contém o código Python responsável por receber as mensagens MQTT e armazenar os dados no Supabase.
+
+- `receptor_mqtt.py`: recebe e processa as mensagens publicadas pelo dispositivo.
+- `.env`: armazena as credenciais de conexão com o Supabase.
+- `.env.example`: disponibiliza um modelo das variáveis de ambiente necessárias para executar o backend.
+
+### Firmware
+
+Contém os arquivos necessários para a simulação do ESP32 no Wokwi.
+
+- `sketch.ino`: código-fonte do ESP32.
+- `diagram.json`: configuração dos componentes e conexões da simulação.
+- `libraries.txt`: bibliotecas utilizadas pelo firmware.
+- `wokwi-project.txt`: informações de configuração do projeto Wokwi.
+
+### simulador
+
+Contém a implementação do simulador em Python.
+
+- `simulador_esp32.py`: simula o comportamento do dispositivo e permite gerar leituras para o sistema.
+
+## Hardware e simulação
+
+O dispositivo utiliza:
+
+- ESP32 DevKit V1.
+- Sensor ultrassônico HC-SR04.
+- Plataforma de simulação Wokwi.
+
+### Conexões do HC-SR04
+
+| HC-SR04 | ESP32 |
+|---|---|
+| VCC | 5V |
+| TRIG | GPIO 25 |
+| ECHO | GPIO 26 |
+| GND | GND |
+
+A altura de referência utilizada no exemplo é de 150 cm.
+
+O nível da água é calculado pela fórmula:
 
 ```python
 nivel_agua_cm = altura_referencia_cm - distancia_cm
 ```
 
-No projeto, a altura de referência utilizada como exemplo é de 150 cm.
+Como o sensor mede a distância até a superfície da água, uma distância menor representa um nível de água maior.
 
-Assim, se o sensor medir uma distância de 70 cm, o nível calculado será:
+## Comunicação MQTT
 
-```text
-150 - 70 = 80 cm
+O dispositivo publica as leituras em um broker MQTT utilizando as seguintes configurações:
+
+```python
+BROKER = "3.93.68.31"
+PORTA = 1883
+TOPICO = "highwater/ponto01/leituras"
 ```
 
-### 5.2. Comunicação MQTT
-
-O MQTT é um protocolo de comunicação baseado no modelo Publisher/Subscriber.
-
-Nesse modelo:
-
-- O ESP32 atua como Publisher, publicando as medições.
-- O broker MQTT recebe e distribui as mensagens.
-- O Python atua como Subscriber, recebendo as informações publicadas.
-
-Configurações utilizadas pelo projeto:
-
-| Parâmetro | Valor |
-|---|---|
-| Broker | `3.93.68.31` |
-| Porta | `1883` |
-| Tópico | `highwater/ponto01/leituras` |
-
-O ESP32 publica as leituras no tópico configurado, enquanto o Python permanece inscrito nesse mesmo tópico aguardando novas mensagens.
-
-### 5.3. Formato das mensagens
-
-As informações são transmitidas em formato JSON.
-
-Exemplo:
+O payload enviado pelo dispositivo utiliza o formato JSON:
 
 ```json
 {
@@ -125,26 +141,13 @@ Exemplo:
 }
 ```
 
-Cada mensagem contém:
+O backend Python se inscreve no tópico para receber e processar as mensagens.
 
-- `ponto_id`: identificação do ponto monitorado.
-- `timestamp`: horário em que a medição foi realizada.
-- `distancia_cm`: distância medida pelo sensor.
-- `nivel_agua_cm`: nível de água calculado pelo ESP32.
+## Processamento dos dados
 
-O Python interpreta o JSON recebido e extrai as informações necessárias para realizar os cálculos.
+O backend utiliza a diferença entre duas leituras consecutivas para calcular a taxa de variação do nível da água.
 
-**Importante:** o endereço do broker e o tópico precisam ser iguais no firmware do ESP32 e no programa Python.
-
-## 6. Processamento dos dados em Python
-
-O Python é responsável por receber as medições MQTT e realizar os cálculos utilizados pelo sistema.
-
-### 6.1. Cálculo da primeira derivada
-
-A primeira derivada representa a taxa de variação do nível da água em relação ao tempo.
-
-Como as medições são discretas, o projeto utiliza uma aproximação numérica por diferenças finitas:
+A primeira derivada é aproximada numericamente por:
 
 \[
 H'(t) \approx \frac{H(t)-H(t-\Delta t)}{\Delta t}
@@ -153,346 +156,205 @@ H'(t) \approx \frac{H(t)-H(t-\Delta t)}{\Delta t}
 Onde:
 
 - \(H(t)\): nível atual da água.
-- \(H(t-\Delta t)\): nível da medição anterior.
-- \(\Delta t\): intervalo de tempo entre as medições.
+- \(H(t-\Delta t)\): nível da leitura anterior.
+- \(\Delta t\): intervalo entre as medições.
 
-O resultado é expresso em centímetros por segundo (cm/s).
+A taxa é expressa em centímetros por segundo (cm/s).
 
-Interpretação:
+- Taxa positiva: nível da água subindo.
+- Taxa negativa: nível da água descendo.
+- Taxa próxima de zero: nível aproximadamente estável.
 
-| Resultado | Significado |
-|---|---|
-| Taxa positiva | A água está subindo. |
-| Taxa negativa | A água está descendo. |
-| Taxa próxima de zero | O nível está relativamente estável. |
+### Classificação de risco
 
-### 6.2. Classificação de risco
-
-O sistema utiliza condições para classificar o estado do ponto monitorado:
+O projeto utiliza os seguintes limites demonstrativos:
 
 | Estado | Condição |
 |---|---|
-| NORMAL | Nenhuma condição de atenção ou criticidade foi identificada. |
-| ATENCAO | Nível igual ou superior a 60 cm e taxa de subida positiva. |
-| CRITICO | Nível igual ou superior a 100 cm. |
+| NORMAL | Nível abaixo de 60 cm, ou sem condição de atenção |
+| ATENÇÃO | Nível a partir de 60 cm, com taxa positiva |
+| CRÍTICO | Nível igual ou superior a 100 cm |
 
-Os valores utilizados são parâmetros demonstrativos do projeto, não limites oficiais de segurança.
+Esses valores são parâmetros utilizados na demonstração, não limites oficiais de segurança.
 
-### 6.3. Estimativa de tempo até o limite
-
-Quando a água está subindo, o sistema também estima quanto tempo falta para atingir o limite crítico.
-
-A fórmula utilizada é:
+O backend também estima o tempo necessário para atingir o limite crítico, considerando a taxa de variação atual:
 
 \[
-t = \frac{H_{\text{limite}}-H_{\text{atual}}}{H'(t)}
+tempo = \frac{nivel\_limite - nivel\_atual}{taxa}
 \]
 
-A estimativa só é realizada quando a taxa de variação é positiva e o nível atual ainda está abaixo do limite.
+Essa estimativa é calculada quando a água está subindo e o nível ainda está abaixo do limite crítico. Ela considera que a taxa de variação permanecerá constante.
 
-Exemplo:
+## Banco de dados e API — Supabase
 
-- Nível atual: 80 cm.
-- Limite crítico: 100 cm.
-- Taxa de subida: 3 cm/s.
+O Supabase é utilizado como banco de dados PostgreSQL e disponibiliza automaticamente uma API REST para consultar os registros.
 
-\[
-t = \frac{100-80}{3} \approx 6,67 \text{ segundos}
-\]
+A tabela principal utilizada pelo projeto é `leituras`.
 
-Essa previsão considera que a taxa de subida permanecerá constante, portanto representa uma estimativa simplificada, não uma garantia do comportamento futuro da água.
+### Estrutura da tabela
 
-## 7. Integração com o Supabase
-
-O Supabase é utilizado como serviço de armazenamento em nuvem e disponibilização dos dados.
-
-Ele utiliza PostgreSQL como banco de dados e oferece uma API REST gerada automaticamente, permitindo que aplicações externas consultem os registros armazenados.
-
-### 7.1. Funcionamento da integração
-
-Depois de receber e processar uma mensagem MQTT, o Python envia os resultados para a tabela `leituras` do Supabase.
-
-Cada leitura recebida gera um novo registro no banco de dados.
-
-O Supabase armazena as informações e disponibiliza os dados por meio de sua API REST.
-
-Dessa forma, o Dashboard React não precisa se conectar diretamente ao broker MQTT nem executar os cálculos realizados pelo Python.
-
-Ele apenas consulta os dados já processados.
-
-### 7.2. Estrutura da tabela
-
-A tabela utilizada pelo projeto deve possuir os seguintes campos:
-
-| Campo | Tipo sugerido | Descrição |
+| Coluna | Tipo | Descrição |
 |---|---|---|
-| `id` | bigint | Identificador do registro. |
-| `ponto_id` | text | Identificação do ponto monitorado. |
-| `timestamp` | timestamptz | Horário de inserção do registro. |
-| `distancia_cm` | float8 | Distância medida pelo sensor. |
-| `nivel_agua_cm` | float8 | Nível calculado da água. |
-| `taxa_cm_por_s` | float8 | Taxa de variação do nível. |
-| `estado` | text | Classificação do risco. |
+| id | bigint | Identificador do registro |
+| ponto_id | text | Identificação do ponto monitorado |
+| timestamp | timestamptz | Data e hora de registro |
+| distancia_cm | float8 | Distância medida pelo sensor |
+| nivel_agua_cm | float8 | Nível calculado da água |
+| taxa_cm_por_s | float8 | Taxa de variação do nível |
+| estado | text | Classificação de risco |
 
-A coluna `timestamp` pode ser configurada com o valor padrão `NOW()` no PostgreSQL.
+A coluna `timestamp` pode utilizar `DEFAULT NOW()` para registrar automaticamente o horário de inserção no banco.
 
-Assim, o Supabase registra automaticamente o horário de inserção, sem exigir que o Python envie esse campo.
+### Consulta pela API REST
 
-### 7.3. Acesso pelo React
-
-O Dashboard pode utilizar a biblioteca oficial `@supabase/supabase-js` para consultar os dados.
-
-Exemplo:
-
-```javascript
-const { data, error } = await supabase
-  .from("leituras")
-  .select("*")
-  .order("timestamp", { ascending: false })
-  .limit(20);
-```
-
-Essa consulta recupera as 20 leituras mais recentes.
-
-O React pode utilizar essas informações para atualizar os indicadores, gráficos e alertas do Dashboard.
-
-**Segurança:** a tabela deve possuir RLS (Row Level Security) habilitado e políticas adequadas para permitir somente as operações necessárias. A chave secreta utilizada pelo Python nunca deve ser incluída no código do React. Para o frontend, deve ser utilizada uma chave pública apropriada, com as permissões devidamente configuradas.
-
-## 8. Bibliotecas utilizadas
-
-### 8.1. Bibliotecas Python
-
-| Biblioteca | Utilização |
-|---|---|
-| `json` | Interpretação das mensagens JSON recebidas pelo MQTT. |
-| `os` | Acesso às variáveis de ambiente utilizadas nas configurações. |
-| `paho-mqtt` | Comunicação com o broker MQTT, inscrição em tópicos e recebimento de mensagens. |
-| `supabase` | Conexão com o Supabase e inserção dos dados na tabela `leituras`. |
-| `python-dotenv` | Carregamento das configurações armazenadas no arquivo `.env`. |
-| `datetime` | Conversão dos timestamps e cálculo dos intervalos de tempo entre as medições. |
-
-### 8.2. Bibliotecas e tecnologias complementares
-
-| Tecnologia | Utilização |
-|---|---|
-| ESP32 | Microcontrolador responsável pela leitura do sensor. |
-| HC-SR04 | Sensor ultrassônico utilizado para medir a distância até a superfície da água. |
-| Wokwi | Ambiente de simulação do ESP32 e dos componentes eletrônicos. |
-| PubSubClient | Biblioteca C++ utilizada pelo ESP32 para comunicação MQTT. |
-| Supabase | Banco de dados PostgreSQL e API REST. |
-| React | Desenvolvimento da interface do Dashboard. |
-| `@supabase/supabase-js` | Integração do Dashboard React com o Supabase. |
-
-## 9. Estrutura de arquivos
-
-Uma organização sugerida para os arquivos do backend é:
+O endpoint segue o formato:
 
 ```text
-HighWater/
-│
-├── backend/
-│   ├── receptor.py
-│   ├── .env
-│   └── requirements.txt
-│
-├── firmware/
-│   ├── sketch.ino
-│   └── diagram.json
-│
-└── README.md
+https://SEU_PROJETO.supabase.co/rest/v1/leituras
 ```
 
-O Dashboard React pode permanecer em um repositório ou diretório separado, desenvolvido pelo integrante responsável pela interface.
+O dashboard React pode consultar os registros utilizando `fetch()` e a chave pública do Supabase.
 
-### Arquivos necessários
+A chave secreta utilizada pelo backend Python não deve ser exposta no frontend.
 
-**`receptor.py`**
+## Configuração e execução
 
-Contém o código Python responsável por:
-
-- Conectar ao broker MQTT.
-- Receber as mensagens publicadas pelo ESP32.
-- Calcular a taxa de variação do nível da água.
-- Classificar o estado do ponto monitorado.
-- Estimar o tempo até o limite crítico.
-- Inserir os dados no Supabase.
-
-**`.env`**
-
-Armazena as credenciais de acesso ao Supabase.
-
-Exemplo:
-
-```env
-SUPABASE_URL=https://seu-projeto.supabase.co
-SUPABASE_SECRET_KEY=sua_chave_secreta
-```
-
-Substitua os valores pelas credenciais reais do projeto.
-
-Esse arquivo não deve ser enviado ao GitHub nem compartilhado publicamente.
-
-**`requirements.txt`**
-
-Lista as dependências Python necessárias para executar o backend.
-
-Conteúdo:
-
-```text
-paho-mqtt
-supabase
-python-dotenv
-```
-
-**`sketch.ino`**
-
-Contém o firmware C++ executado pelo ESP32 no Wokwi, incluindo:
-
-- Configuração do Wi-Fi.
-- Configuração do broker MQTT.
-- Leitura do sensor HC-SR04.
-- Cálculo do nível da água.
-- Publicação das informações em JSON.
-
-**`diagram.json`**
-
-Arquivo utilizado pelo Wokwi para representar a montagem virtual dos componentes e suas conexões.
-
-## 10. Instalação e configuração
-
-### 10.1. Pré-requisitos
-
-Antes de executar o projeto, é necessário possuir:
+### Pré-requisitos
 
 - Python instalado.
-- Pip instalado.
-- Conta no Supabase.
-- Projeto criado no Supabase.
-- Simulação do ESP32 configurada no Wokwi.
-- Acesso ao broker MQTT utilizado pelo projeto.
+- Git instalado.
+- Conta e projeto configurados no Supabase.
+- Projeto do ESP32 configurado no Wokwi.
 
-### 10.2. Preparação do ambiente Python
-
-Abra o terminal na pasta `backend` e crie um ambiente virtual:
+### 1. Clonar o repositório
 
 ```bash
-python -m venv venv
+git clone URL_DO_REPOSITORIO
+cd HighWater
 ```
 
-Ative o ambiente virtual.
+### 2. Configurar o backend
 
-Windows:
+Entre na pasta `Backend`:
 
 ```bash
-venv\Scripts\activate
+cd Backend
 ```
 
-Linux/macOS:
+Crie e ative um ambiente virtual:
 
 ```bash
-source venv/bin/activate
+python -m venv .venv
 ```
 
-Instale as dependências:
+No Windows:
 
 ```bash
-pip install -r requirements.txt
+.venv\Scripts\activate
 ```
 
-### 10.3. Configuração do Supabase
-
-1. Acesse o [Supabase](https://supabase.com/).
-2. Crie um projeto.
-3. Abra o SQL Editor.
-4. Crie a tabela `leituras` utilizando a estrutura descrita anteriormente.
-5. Configure o valor padrão `NOW()` na coluna `timestamp`.
-6. Habilite RLS e configure as políticas de acesso.
-7. Acesse as configurações de API do projeto.
-8. Copie a URL do projeto e a chave secreta apropriada para o backend.
-9. Preencha o arquivo `.env` com essas informações.
-
-### 10.4. Configuração do Wokwi
-
-1. Abra o projeto no Wokwi.
-2. Verifique as conexões do ESP32 com o sensor HC-SR04.
-3. Confira as configurações de Wi-Fi e broker MQTT no firmware.
-4. Verifique se o tópico de publicação é `highwater/ponto01/leituras`.
-5. Inicie a simulação.
-
-O ESP32 deverá começar a publicar as medições periodicamente.
-
-## 11. Como executar o projeto
-
-A execução deve seguir esta ordem:
-
-### Etapa 1 — Iniciar a simulação
-
-Abra o projeto no Wokwi e inicie a simulação do ESP32.
-
-O dispositivo deverá conectar-se à rede Wi-Fi simulada e ao broker MQTT.
-
-### Etapa 2 — Iniciar o backend Python
-
-No terminal, dentro da pasta `backend`, execute:
+No Linux ou macOS:
 
 ```bash
-python receptor.py
+source .venv/bin/activate
 ```
 
-O programa deverá exibir:
+Instale as dependências utilizadas pelo backend:
 
-```text
-Aguardando mensagens MQTT...
+```bash
+pip install paho-mqtt supabase python-dotenv
 ```
 
-Após estabelecer a conexão com o broker:
+### 3. Configurar as variáveis de ambiente
 
-```text
-Conectado ao broker MQTT!
+Na pasta `Backend`, existe o arquivo `.env.example`, que serve como modelo para configurar as credenciais do Supabase.
+
+Crie uma cópia desse arquivo com o nome `.env`:
+
+```bash
+copy .env.example .env
 ```
 
-Quando uma nova leitura for recebida, serão exibidos os dados do sensor, a taxa de variação, o estado do ponto e, quando aplicável, o tempo estimado até o limite crítico.
+No Linux ou macOS:
 
-Os resultados também serão enviados ao Supabase.
+```bash
+cp .env.example .env
+```
 
-### Etapa 3 — Verificar o Supabase
+Preencha o arquivo `.env` com as credenciais do seu próprio projeto:
 
-Acesse o painel do projeto Supabase e abra a tabela `leituras`.
+```env
+SUPABASE_URL=https://SEU_PROJETO.supabase.co
+SUPABASE_SECRET_KEY=SUA_CHAVE_SECRETA
+```
 
-Cada nova mensagem processada pelo Python deverá gerar um registro.
+**Importante:** o arquivo `.env` contém credenciais privadas e não deve ser enviado ao GitHub. O `.env.example` deve ser versionado para orientar outros desenvolvedores na configuração do projeto.
 
-Verifique se os campos estão sendo preenchidos corretamente.
+### 4. Executar o backend
 
-### Etapa 4 — Iniciar ou acessar o Dashboard React
+Com o ambiente virtual ativado e as variáveis de ambiente configuradas, execute:
 
-O integrante responsável pelo frontend deverá configurar a conexão com o Supabase utilizando a URL do projeto e a chave pública apropriada.
+```bash
+python receptor_mqtt.py
+```
 
-Depois, poderá executar o Dashboard normalmente.
+O backend começará a aguardar mensagens publicadas no tópico MQTT configurado.
 
-Os dados armazenados no Supabase estarão disponíveis para consulta pela internet, permitindo que diferentes integrantes acessem as mesmas informações sem precisar executar o backend em seus computadores.
+### 5. Executar o firmware no Wokwi
 
-## 12. Observações importantes
+Abra a pasta `Firmware` no Wokwi ou utilize a configuração do projeto correspondente.
 
-- O computador responsável pelo backend precisa permanecer ligado enquanto o receptor Python estiver recebendo as mensagens MQTT.
-- O Wokwi precisa permanecer executando para continuar produzindo novas leituras.
-- O broker MQTT utilizado deve estar acessível e disponível.
-- O Supabase mantém os dados armazenados mesmo depois que o Python é encerrado.
-- O Dashboard pode consultar os registros armazenados independentemente de o Wokwi estar executando naquele momento.
-- A API REST do Supabase permite consultar o histórico de leituras, mas não substitui o processamento realizado pelo Python.
-- A estimativa de tempo até o limite é uma previsão simplificada baseada na taxa de variação atual.
-- Os parâmetros de atenção e criticidade são valores demonstrativos e não devem ser utilizados como referência oficial para situações reais de emergência.
+Execute a simulação do ESP32 para iniciar o envio das leituras ao broker MQTT.
 
-## 13. Resultado esperado
+### 6. Executar o simulador Python
 
-Ao executar todos os componentes, o HighWater deverá ser capaz de:
+Para utilizar o simulador alternativo, abra um terminal na pasta `simulador` e execute:
 
-1. Simular medições de nível de água por meio do ESP32 e do HC-SR04.
-2. Transmitir as leituras utilizando MQTT.
-3. Receber e processar as informações com Python.
-4. Calcular a taxa de variação do nível da água.
-5. Classificar o estado do ponto monitorado.
-6. Estimar o tempo até atingir o limite crítico, quando aplicável.
-7. Armazenar os resultados no Supabase.
-8. Disponibilizar os registros para consulta pelo Dashboard React.
+```bash
+python simulador_esp32.py
+```
 
-Dessa maneira, o projeto demonstra uma integração entre IoT, comunicação MQTT, processamento de dados, cálculo diferencial, armazenamento em nuvem e desenvolvimento web.
+Caso o simulador utilize bibliotecas externas, instale as dependências necessárias antes de executá-lo.
+
+## Segurança e versionamento
+
+O arquivo `.gitignore` impede que arquivos privados e temporários sejam enviados ao GitHub.
+
+Exemplo de configuração:
+
+```gitignore
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Ambientes virtuais
+venv/
+.venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+```
+
+O arquivo `.env.example` permanece versionado, enquanto o `.env` e os ambientes virtuais ficam restritos à máquina local.
+
+**Atenção:** nunca exponha a chave `SUPABASE_SECRET_KEY` no GitHub ou no código do frontend React. Para consultas pelo dashboard, utilize a chave pública do Supabase com as políticas de acesso RLS configuradas corretamente.
+
+## Tecnologias utilizadas
+
+- **C++ / Arduino:** programação do ESP32.
+- **Wokwi:** simulação do hardware.
+- **MQTT:** comunicação entre dispositivo e backend.
+- **Python:** simulação, recepção e processamento dos dados.
+- **Supabase / PostgreSQL:** armazenamento e disponibilização dos dados.
+- **React:** desenvolvimento do dashboard.
+- **Vercel:** publicação da aplicação web.
+
+## Demonstração
+
+Para acompanhar a interface de simulação, acesse:
+
+[https://front-web-rose.vercel.app/simulation](https://front-web-rose.vercel.app/simulation)
+
+**Observação:** para receber novas medições pelo fluxo completo, o dispositivo (Wokwi ou simulador Python) e o backend precisam estar em execução. Os registros já enviados permanecem armazenados no Supabase e podem ser consultados posteriormente.
