@@ -14,11 +14,7 @@ O projeto possui uma interface web desenvolvida em React e publicada na Vercel.
 
 **Acesse:** [High Water — Simulação](https://front-web-rose.vercel.app/simulation)
 
-A interface permite visualizar a simulação do monitoramento e acompanhar o comportamento do nível da água.
-
 ## Arquitetura do projeto
-
-O fluxo principal de funcionamento é:
 
 ```text
 ESP32 + HC-SR04 (Wokwi)
@@ -36,13 +32,9 @@ ESP32 + HC-SR04 (Wokwi)
     Dashboard React
 ```
 
-O projeto também possui um simulador Python que permite representar o comportamento do dispositivo sem depender exclusivamente da simulação do hardware no Wokwi.
-
-### Responsabilidade de cada componente
-
 - **Firmware:** código responsável pelo funcionamento do ESP32 e pela comunicação com o sensor ultrassônico.
 - **Backend:** recebe as mensagens MQTT, processa as leituras e envia os registros ao Supabase.
-- **simulador:** simula o comportamento do dispositivo utilizando Python.
+- **Simulator:** simula o comportamento do dispositivo utilizando Python.
 - **Supabase:** armazena os dados e disponibiliza uma API REST para consulta.
 - **Dashboard:** apresenta os dados por meio de uma interface web.
 
@@ -62,7 +54,7 @@ HighWater/
 │   ├── sketch.ino
 │   └── wokwi-project.txt
 │
-├── simulador/
+├── Simulator/
 │   └── simulador_esp32.py
 │
 ├── .gitignore
@@ -72,24 +64,18 @@ HighWater/
 
 ### Backend
 
-Contém o código Python responsável por receber as mensagens MQTT e armazenar os dados no Supabase.
-
-- `receptor_mqtt.py`: recebe e processa as mensagens publicadas pelo dispositivo.
+- `receptor_mqtt.py`: recebe e processa as mensagens MQTT.
 - `.env`: armazena as credenciais de conexão com o Supabase.
-- `.env.example`: disponibiliza um modelo das variáveis de ambiente necessárias para executar o backend.
+- `.env.example`: disponibiliza um modelo das variáveis de ambiente necessárias.
 
 ### Firmware
-
-Contém os arquivos necessários para a simulação do ESP32 no Wokwi.
 
 - `sketch.ino`: código-fonte do ESP32.
 - `diagram.json`: configuração dos componentes e conexões da simulação.
 - `libraries.txt`: bibliotecas utilizadas pelo firmware.
 - `wokwi-project.txt`: informações de configuração do projeto Wokwi.
 
-### simulador
-
-Contém a implementação do simulador em Python.
+### Simulator
 
 - `simulador_esp32.py`: simula o comportamento do dispositivo e permite gerar leituras para o sistema.
 
@@ -97,11 +83,17 @@ Contém a implementação do simulador em Python.
 
 O dispositivo utiliza:
 
-- ESP32 DevKit V1.
+- ESP32 DevKit.
 - Sensor ultrassônico HC-SR04.
 - Plataforma de simulação Wokwi.
 
-### Conexões do HC-SR04
+### Diagrama do circuito — Wokwi
+
+O circuito pode ser visualizado e executado diretamente na plataforma Wokwi:
+
+<https://wokwi.com/projects/480232766107163649>
+
+O projeto utiliza as seguintes conexões entre o HC-SR04 e o ESP32:
 
 | HC-SR04 | ESP32 |
 |---|---|
@@ -110,7 +102,7 @@ O dispositivo utiliza:
 | ECHO | GPIO 26 |
 | GND | GND |
 
-A altura de referência utilizada no exemplo é de 150 cm.
+A altura de referência utilizada é de 150 cm.
 
 O nível da água é calculado pela fórmula:
 
@@ -171,7 +163,7 @@ O projeto utiliza os seguintes limites demonstrativos:
 
 | Estado | Condição |
 |---|---|
-| NORMAL | Nível abaixo de 60 cm, ou sem condição de atenção |
+| NORMAL | Nível abaixo de 60 cm, sem condição de atenção |
 | ATENÇÃO | Nível a partir de 60 cm, com taxa positiva |
 | CRÍTICO | Nível igual ou superior a 100 cm |
 
@@ -259,7 +251,7 @@ No Linux ou macOS:
 source .venv/bin/activate
 ```
 
-Instale as dependências utilizadas pelo backend:
+Instale as dependências:
 
 ```bash
 pip install paho-mqtt supabase python-dotenv
@@ -267,9 +259,9 @@ pip install paho-mqtt supabase python-dotenv
 
 ### 3. Configurar as variáveis de ambiente
 
-Na pasta `Backend`, existe o arquivo `.env.example`, que serve como modelo para configurar as credenciais do Supabase.
+Na pasta `Backend`, utilize o arquivo `.env.example` como modelo.
 
-Crie uma cópia desse arquivo com o nome `.env`:
+Crie uma cópia com o nome `.env`:
 
 ```bash
 copy .env.example .env
@@ -281,18 +273,16 @@ No Linux ou macOS:
 cp .env.example .env
 ```
 
-Preencha o arquivo `.env` com as credenciais do seu próprio projeto:
+Preencha o arquivo `.env` com as credenciais do seu projeto Supabase:
 
 ```env
 SUPABASE_URL=https://SEU_PROJETO.supabase.co
 SUPABASE_SECRET_KEY=SUA_CHAVE_SECRETA
 ```
 
-**Importante:** o arquivo `.env` contém credenciais privadas e não deve ser enviado ao GitHub. O `.env.example` deve ser versionado para orientar outros desenvolvedores na configuração do projeto.
-
 ### 4. Executar o backend
 
-Com o ambiente virtual ativado e as variáveis de ambiente configuradas, execute:
+Com o ambiente virtual ativado e as variáveis configuradas:
 
 ```bash
 python receptor_mqtt.py
@@ -302,13 +292,11 @@ O backend começará a aguardar mensagens publicadas no tópico MQTT configurado
 
 ### 5. Executar o firmware no Wokwi
 
-Abra a pasta `Firmware` no Wokwi ou utilize a configuração do projeto correspondente.
-
-Execute a simulação do ESP32 para iniciar o envio das leituras ao broker MQTT.
+Abra o [projeto HighWater no Wokwi](https://wokwi.com/projects/480232766107163649) e inicie a simulação do ESP32.
 
 ### 6. Executar o simulador Python
 
-Para utilizar o simulador alternativo, abra um terminal na pasta `simulador` e execute:
+Para utilizar o simulador alternativo, abra um terminal na pasta `Simulator` e execute:
 
 ```bash
 python simulador_esp32.py
@@ -318,7 +306,7 @@ Caso o simulador utilize bibliotecas externas, instale as dependências necessá
 
 ## Segurança e versionamento
 
-O arquivo `.gitignore` impede que arquivos privados e temporários sejam enviados ao GitHub.
+O arquivo `.gitignore`, localizado na raiz do projeto, deve impedir que arquivos privados e temporários sejam enviados ao GitHub.
 
 Exemplo de configuração:
 
@@ -339,8 +327,6 @@ __pycache__/
 
 O arquivo `.env.example` permanece versionado, enquanto o `.env` e os ambientes virtuais ficam restritos à máquina local.
 
-**Atenção:** nunca exponha a chave `SUPABASE_SECRET_KEY` no GitHub ou no código do frontend React. Para consultas pelo dashboard, utilize a chave pública do Supabase com as políticas de acesso RLS configuradas corretamente.
-
 ## Tecnologias utilizadas
 
 - **C++ / Arduino:** programação do ESP32.
@@ -353,8 +339,7 @@ O arquivo `.env.example` permanece versionado, enquanto o `.env` e os ambientes 
 
 ## Demonstração
 
-Para acompanhar a interface de simulação, acesse:
-
-[https://front-web-rose.vercel.app/simulation](https://front-web-rose.vercel.app/simulation)
+- [Dashboard High Water](https://front-web-rose.vercel.app/simulation)
+- [Circuito e simulação no Wokwi](https://wokwi.com/projects/480232766107163649)
 
 **Observação:** para receber novas medições pelo fluxo completo, o dispositivo (Wokwi ou simulador Python) e o backend precisam estar em execução. Os registros já enviados permanecem armazenados no Supabase e podem ser consultados posteriormente.
