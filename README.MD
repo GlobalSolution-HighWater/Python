@@ -8,6 +8,12 @@ A solução utiliza um ESP32 com sensor ultrassônico HC-SR04, comunicação MQT
 
 O projeto também conta com um simulador em Python para representar o funcionamento do dispositivo.
 
+## Integrantes
+
+Felipe Rabelo - RM 570340
+Gustavo Ferreira Tavares - RM 569928
+Ricardo Salmerón - RM 572916
+
 ## Dashboard
 
 O projeto possui uma interface web desenvolvida em React e publicada na Vercel.

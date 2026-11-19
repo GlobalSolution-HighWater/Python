@@ -1,0 +1,148 @@
+{
+  "dados": {
+    "n_medicoes": 22,
+    "duracao_s": 106.536914,
+    "inicio_iso": "2026-11-18T20:05:58.656768+00:00",
+    "intervalo_medio_s": 5.0731863809523805,
+    "nivel_minimo_cm": 7.45,
+    "nivel_maximo_cm": 111.69,
+    "altura_referencia_cm": 150.0,
+    "nivel_atencao_cm": 60.0,
+    "nivel_critico_cm": 100.0
+  },
+  "modelo": {
+    "B": 0.0,
+    "A": 106.808995078531,
+    "mu": 56.687844226787405,
+    "sigma": 28.575493078354828,
+    "r2": 0.9757118686214542,
+    "rmse_cm": 4.886236459397453
+  },
+  "limites": {
+    "limite_mais_infinito": 0.0,
+    "limite_menos_infinito": 0.0,
+    "limite_em_mu": 106.808995078531,
+    "conferencia_t_grande": 0.0,
+    "conferencia_t_muito_negativo": 0.0,
+    "limite_derivada_t0": 0.0,
+    "tabela_quociente": [
+      {
+        "h": 10.0,
+        "quociente": -0.6343978875506735
+      },
+      {
+        "h": 1.0,
+        "quociente": -0.06538188076049778
+      },
+      {
+        "h": 0.1,
+        "quociente": -0.006540170007269808
+      },
+      {
+        "h": 0.01,
+        "quociente": -0.0006540189829706833
+      },
+      {
+        "h": 0.001,
+        "quociente": -6.54018919021837e-05
+      }
+    ]
+  },
+  "derivada": {
+    "expr_derivada": "H'(t) = -A (t - mu) exp(-(t-mu)^2/(2 sigma^2)) / sigma^2",
+    "expr_segunda_derivada": "H''(t) = A exp(-(t-mu)^2/(2 sigma^2)) [ (t-mu)^2/sigma^2 - 1 ] / sigma^2",
+    "pontos_criticos": [
+      "t = mu = 56.69 s"
+    ],
+    "classificacao_ponto_critico": "máximo local",
+    "t_pico_s": 56.687844226787405,
+    "nivel_pico_cm": 106.808995078531,
+    "segunda_derivada_no_pico": -0.13080380061733798,
+    "inflexao_s": [
+      28.112351148432577,
+      85.26333730514223
+    ],
+    "nivel_inflexao_cm": 64.78293024822483,
+    "taxa_max_subida_cm_s": 2.2670800489982152,
+    "taxa_max_descida_cm_s": -2.2670800489982152,
+    "taxa_inicial_cm_s": 1.0364350583228474,
+    "taxa_final_cm_s": -1.4238386819805346,
+    "rmse_taxa_modelo_vs_numerica": 0.8217143793382117,
+    "t_atencao_sobe_s": 25.998840002971992,
+    "t_atencao_desce_s": 87.37684845060282,
+    "tempo_acima_atencao_s": 61.37800844763083,
+    "taxa_atencao_sobe_cm_s": 2.255000182345207,
+    "t_critico_sobe_s": 46.315927394595654,
+    "t_critico_desce_s": 67.05976105897915,
+    "tempo_acima_critico_s": 20.743833664383494,
+    "taxa_critico_sobe_cm_s": 1.270198395125918
+  },
+  "integral": {
+    "primitiva_verificada": true,
+    "T_s": 106.536914,
+    "integral_analitica_cm_s": 7159.532747812518,
+    "integral_numerica_modelo_cm_s": 7159.532741994939,
+    "integral_trapezios_dados_cm_s": 7130.238149679999,
+    "diferenca_modelo_dados_pct": 0.41085020608791256,
+    "nivel_medio_cm": 67.20236656951147,
+    "exposicao_acima_atencao_cm_s": 1803.9767113622704,
+    "exposicao_acima_critico_cm_s": 93.54190376141455,
+    "diametro_bueiro_cm": 100.0,
+    "secao_cm2": 7853.981633974483,
+    "volume_entrada_litros": 721.6213883371413,
+    "volume_saida_litros": 655.6946087806405,
+    "volume_liquido_litros": 65.9267794693992,
+    "delta_h_total_cm": 8.39405826774733,
+    "vazao_enchimento_max_l_s": 17.805605067581954
+  },
+  "pontos": {
+    "t_s": [
+      0.0,
+      4.233201,
+      9.55332,
+      14.651371,
+      19.537283,
+      24.888277,
+      29.799535,
+      35.064696,
+      40.168687,
+      45.08762,
+      50.334681,
+      55.39763,
+      60.66795,
+      65.619555,
+      70.801111,
+      75.895953,
+      81.003014,
+      86.343346,
+      91.207846,
+      96.282851,
+      101.409361,
+      106.536914
+    ],
+    "nivel_cm": [
+      7.45,
+      14.91,
+      21.98,
+      30.0,
+      51.13,
+      61.21,
+      75.35,
+      82.43,
+      89.49,
+      96.51,
+      103.64,
+      111.69,
+      107.71,
+      96.58,
+      86.51,
+      82.43,
+      75.14,
+      68.3,
+      54.18,
+      37.03,
+      29.95,
+      32.99
+    ]
+  }
+}
